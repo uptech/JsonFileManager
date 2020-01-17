@@ -4,7 +4,7 @@ public enum JsonFileManagerError: Error {
     case fileMissing
 }
 
-class JsonFileManager<T: Codable> {
+public class JsonFileManager<T: Codable> {
     public var fileName: String
 
     init(fileName: String) {
