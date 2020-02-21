@@ -5,22 +5,19 @@ public enum JsonFileManagerError: Error {
 }
 
 public class JsonFileManager<T: Codable> {
-    public var fileName: String
+    private var fileURL: URL
 
-    public init(fileName: String) {
-        self.fileName = fileName
+    public init(fileURL: URL) {
+        self.fileURL = fileURL
     }
 
     public func save(data: T) throws {
-        let url = self.fileUrl()
-        try encode(data: data).write(to: url)
+        try encode(data: data).write(to: self.fileURL)
     }
 
     public func read(completed: (T)-> ()) throws {
-        let url = self.fileUrl()
-
         do {
-            if FileManager.default.fileExists(atPath: url.path) {
+            if FileManager.default.fileExists(atPath: self.fileURL.path) {
                 let data = try decode(jsonData: readJsonData())
                 completed(data)
             } else {
@@ -33,14 +30,8 @@ public class JsonFileManager<T: Codable> {
 
     // MARK: - Private Support Methods
 
-    private func fileUrl() -> URL {
-        let documentsUrl = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let fileUrl = documentsUrl.appendingPathComponent(self.fileName)
-        return fileUrl
-    }
-
     private func readJsonData() throws -> Data {
-        let jsonData = try Data(contentsOf: fileUrl())
+        let jsonData = try Data(contentsOf: self.fileURL)
         return jsonData
     }
 
